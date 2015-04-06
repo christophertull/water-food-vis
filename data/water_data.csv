@@ -1,4 +1,4 @@
-Item,Green,Blue,Grey,Total,Calorie(kcal/kg),Protein (g/kg),Fat (g/kg),Calorie(liter/kcal),Protein (liter/g protein),Fat (liter/g fat)
+Item,Green,Blue,Grey,Total Mass (liter/kg),Calorie(kcal/kg),Protein (g/kg),Fat (g/kg),Calorie (liter/kcal),Protein (liter/g protein),Fat (liter/g fat)
 Sugar crops,130,52,15,197,285,0,0,0.69,0,0
 Vegetables,194,43,85,322,240,12,2.1,1.34,26,154
 Starchy roots,327,16,43,387,827,13,1.7,0.47,31,226

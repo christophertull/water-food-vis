@@ -1,0 +1,44 @@
+svg {
+  font: 10px sans-serif;
+}
+
+.bar rect {
+  fill: steelblue;
+}
+
+.bar:hover rect {
+  fill-opacity: 0;
+  visibility:hidden;
+}
+
+.bar .greenbar {
+  fill: green;
+  fill-opacity:0;
+}
+
+.bar .greenbar:hover {
+  fill-opacity: 1;
+}
+
+.value {
+  fill: white;
+}
+
+.axis line{
+  shape-rendering: crispEdges;
+  fill: none;
+}
+
+.axis path {
+  stroke: black;
+  fill: none;
+}
+
+.x.axis line {
+  stroke: black;
+  stroke-opacity: .8;
+}
+
+.y.axis path {
+  stroke: black;
+}
