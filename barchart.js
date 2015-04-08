@@ -65,7 +65,7 @@ d3.csv("data/water_data.csv" ,function(data,error) {
     
   menu.property("value", "Total Mass (liter/kg)");
 
-  redraw();
+  redraw(true);
 });
 
 
@@ -74,12 +74,11 @@ d3.csv("data/water_data.csv" ,function(data,error) {
 
 
 
+// var altKey;
 
-var altKey;
-
-d3.select(window)
-    .on("keydown", function() { altKey = d3.event.altKey; })
-    .on("keyup", function() { altKey = false; });
+// d3.select(window)
+//     .on("keydown", function() { altKey = d3.event.altKey; })
+//     .on("keyup", function() { altKey = false; });
 
 
 
@@ -89,11 +88,13 @@ d3.select(window)
 
 
 function change() {
-  clearTimeout(timeout);
+  // clearTimeout(timeout);
 
   d3.transition()
-      .duration(altKey ? 7500 : 750)
+      // .duration(altKey ? 7500 : 750)
+      .duration(1000)
       .each(redraw);
+  // console.log()
 }
 
 
@@ -102,9 +103,15 @@ function change() {
 
 
 
-function redraw() {
+function redraw(sort) {
   //the current value to be displayed
   var newType = menu.property("value");
+
+  if(sort){
+    foods.sort(function(a,b){
+      return b[newType] - a[newType];
+    });
+  }
 
   //map the food items to the y axis
   y.domain(foods.map(function(d) { return d.Item; }));
@@ -114,8 +121,7 @@ function redraw() {
 
   var barEnter = bar.enter().insert("g", ".axis")
       .attr("class", "bar")
-      .attr("transform", function(d) { return "translate(0," + (y(d.Item) + height) + ")"; })
-      .style("fill-opacity", 0);
+      .attr("transform", function(d) { return "translate(0," + (y(d.Item) + height) + ")"; });
 
   //add the bars
   barEnter
@@ -123,13 +129,13 @@ function redraw() {
         .attr("width", type && function(d) { return x(d[type]); })
         .attr("height", y.rangeBand());
   
-  svg.selectAll(".bar")
-      .append("rect")
-        .attr("width", type && function(d) { 
-          return x(d[type]*(d["Green"]/d["Total Mass (liter/kg)"])); 
-        })
-        .attr("height", y.rangeBand())
-        .attr("class","greenbar");
+  // svg.selectAll(".bar")
+  //     .append("rect")
+  //       .attr("width", type && function(d) { 
+  //         return x(d[type]*(d["Green"]/d["Total Mass (liter/kg)"])); 
+  //       })
+  //       .attr("height", y.rangeBand())
+  //       .attr("class","greenbar");
 
   //add text to the bars
   barEnter.append("text")
@@ -140,12 +146,26 @@ function redraw() {
       .attr("text-anchor", "end")
       .text(function(d) { return d.Item; });
 
+      console.log("TEST1")
+
   barEnter.append("text")
       .attr("class", "value")
-      .attr("x", type && function(d) { return x(d[type]) - 3; })
+      .each(function(d){
+        if(x(parseFloat(d[newType]))-margin.left < 20 ){
+          d3.select(this)
+            .attr("x", type && function(d) { return x(d[type]) + 3; })
+            .attr("fill","black")
+            .attr("text-anchor", "start");
+        }
+        else{
+          d3.select(this)
+          .attr("x", type && function(d) { return x(d[type]) - 3; })
+          .attr("fill","white")
+          .attr("text-anchor", "end");
+        }
+      })
       .attr("y", y.rangeBand() / 2)
-      .attr("dy", ".35em")
-      .attr("text-anchor", "end");
+      .attr("dy", ".35em");
 
   type = newType;
 
@@ -153,34 +173,57 @@ function redraw() {
   console.log("Xdomain: ", d3.max(foods,function(d){return parseFloat(d[type]);}) );
   x.domain([0, d3.max(foods,function(d){return parseFloat(d[type]);}) ]);
 
+
+
   //transition the new bars into place
   var barUpdate = d3.transition(bar)
       .attr("transform", function(d) { return "translate(0," + (d.y0 = y(d.Item)) + ")"; })
       .style("fill-opacity", 1);
 
+
+
   //adjust width
   barUpdate.select("rect")
       .attr("width", function(d) { return x(d[type]); });
 
+
   barUpdate.select(".value")
-      .attr("x", function(d) { return x(d[type]) - 3; })
+      .each(function(d){
+        if(x(parseFloat(d[newType])) < 20 ){
+          d3.select(this)
+            .transition(1000)
+            .attr("x", type && function(d) { return x(d[type]) + 2; })
+            .attr("fill","black")
+            .attr("text-anchor", "start");
+        }
+        else{
+          d3.select(this)
+          .transition(1000)
+          .attr("x", type && function(d) { return x(d[type]) - 3; })
+          .attr("fill","white")
+          .attr("text-anchor", "end");
+        }
+      })
       .text(function(d) { return format(d[type]); });
 
-  //get rid of old bars
-  var barExit = d3.transition(bar.exit())
-      .attr("transform", function(d) { return "translate(0," + (d.y0 + height) + ")"; })
-      .style("fill-opacity", 0)
-      .remove();
+  // //get rid of old bars
+  // var barExit = d3.transition(bar.exit())
+  //     .attr("transform", function(d) { return "translate(0," + (d.y0 + height) + ")"; })
+  //     .style("fill-opacity", 0)
+  //     .remove();
 
-  barExit.select("rect")
-      .attr("width", function(d) { return x(d[type]); });
+  // barExit.select("rect")
+  //     .attr("width", function(d) { return x(d[type]); });
 
-  barExit.select(".value")
-      .attr("x", function(d) { return x(d[type]) - 3; })
-      .text(function(d) { return format(d[type]); });
+  // barExit.select(".value")
+  //     .attr("x", function(d) { return x(d[type]) - 3; })
+  //     .text(function(d) { return format(d[type]); });
 
   d3.transition(svg).select(".x.axis")
       .call(xAxis);
+
+  console.log(d3.transition(svg));
+  console.log(d3.transition(svg).select(".x.axis"));
 }
 
 
@@ -188,7 +231,7 @@ function redraw() {
 
 
 
-var timeout = setTimeout(function() {
-  menu.property("value", "Total Mass (liter/kg)").node().focus();
-  change();
-}, 5000);
+// var timeout = setTimeout(function() {
+//   menu.property("value", "Total Mass (liter/kg)").node().focus();
+//   change();
+// }, 5000);

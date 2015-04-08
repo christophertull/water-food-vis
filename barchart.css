@@ -6,27 +6,27 @@ svg {
   fill: steelblue;
 }
 
-.bar:hover rect {
+/*.bar:hover rect {
   fill-opacity: 0;
   visibility:hidden;
-}
+}*/
 
-.bar .greenbar {
+/*.bar .greenbar {
   fill: green;
   fill-opacity:0;
 }
 
 .bar .greenbar:hover {
   fill-opacity: 1;
-}
+}*/
 
-.value {
+/*.value {
   fill: white;
-}
+}*/
 
 .axis line{
   shape-rendering: crispEdges;
-  fill: none;
+  /*fill: none;*/
 }
 
 .axis path {
@@ -36,7 +36,7 @@ svg {
 
 .x.axis line {
   stroke: black;
-  stroke-opacity: .8;
+  stroke-opacity: 1;
 }
 
 .y.axis path {
