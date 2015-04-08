@@ -42,6 +42,9 @@ svg.append("g")
 var menu = d3.select("#menu select")
     .on("change", change);
 
+var sortButton = d3.select("#sortButton")
+    .on("click", sortBars);    
+
 
 data_csv = "http://visiblysustainable.com/visualizations/water-food-vis/water_data.csv";
 
@@ -101,6 +104,17 @@ function change() {
   // console.log()
 }
 
+
+function sortBars() {
+  // clearTimeout(timeout);
+  d3.transition()
+      // .duration(altKey ? 7500 : 750)
+      .duration(transitionDuration)
+      .each(function(){
+        redraw(true);
+      });
+  // console.log()
+}
 
 
 
