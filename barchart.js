@@ -8,6 +8,8 @@ var format = d3.format(".1"),
     foods,
     type;
 
+var transitionDuration = 750;
+
 var x = d3.scale.linear()
     .range([0, width]);
 
@@ -92,8 +94,10 @@ function change() {
 
   d3.transition()
       // .duration(altKey ? 7500 : 750)
-      .duration(1000)
-      .each(redraw);
+      .duration(transitionDuration)
+      .each(function(){
+        redraw(false);
+      });
   // console.log()
 }
 
@@ -144,9 +148,14 @@ function redraw(sort) {
       .attr("y", y.rangeBand() / 2)
       .attr("dy", ".35em")
       .attr("text-anchor", "end")
+      .each(function(d){
+        if(d[newType] <= 0){
+          d3.select(this)
+          .attr("fill","gray");
+        }
+      })
       .text(function(d) { return d.Item; });
 
-      console.log("TEST1")
 
   barEnter.append("text")
       .attr("class", "value")
@@ -186,25 +195,44 @@ function redraw(sort) {
   barUpdate.select("rect")
       .attr("width", function(d) { return x(d[type]); });
 
+  barUpdate.select(".label")
+      .each(function(d){
+        if(d[newType] <= 0){
+          d3.select(this)
+          .attr("fill","grey");
+        }
+        else{
+          d3.select(this)
+          .attr("fill","black");
+        }
+      });
 
   barUpdate.select(".value")
       .each(function(d){
         if(x(parseFloat(d[newType])) < 20 ){
           d3.select(this)
-            .transition(1000)
+            .transition(transitionDuration)
             .attr("x", type && function(d) { return x(d[type]) + 2; })
             .attr("fill","black")
             .attr("text-anchor", "start");
         }
         else{
           d3.select(this)
-          .transition(1000)
+          .transition(transitionDuration)
           .attr("x", type && function(d) { return x(d[type]) - 3; })
           .attr("fill","white")
           .attr("text-anchor", "end");
         }
-      })
-      .text(function(d) { return format(d[type]); });
+
+        if(d[newType] <= 0 ){
+          d3.select(this)
+            .text(function(d) { return "NA"; });
+        }
+        else{
+          d3.select(this)
+            .text(function(d) { return format(d[type]); });
+        }
+      });
 
   // //get rid of old bars
   // var barExit = d3.transition(bar.exit())
