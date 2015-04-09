@@ -2,10 +2,10 @@ svg {
   font: 10px sans-serif;
 }
 
-.bar rect {
+/*.bar rect {
   fill: steelblue;
 }
-
+*/
 /*.bar:hover rect {
   fill-opacity: 0;
   visibility:hidden;

@@ -8,6 +8,13 @@ var format = d3.format(".1"),
     foods,
     type;
 
+var meats = ["Beef","Sheep/goat meat","Pig meat","Chicken meat"],
+    vegetarian = ["Butter","Eggs","Milk"];
+
+var meatColor = "#F3A062",
+    vegetarianColor = "#9A69B5",
+    veganColor = "#86B87F";
+
 var transitionDuration = 750;
 
 var x = d3.scale.linear()
@@ -70,25 +77,42 @@ d3.csv("data/water_data.csv" ,function(data,error) {
     
   menu.property("value", "Total Mass (liter/kg)");
 
+
+  var legend = svg.selectAll(".legend")
+      .data([["Meat",meatColor],
+            ["Lacto-Ovo",vegetarianColor],
+            ["Vegan Friendly",veganColor]])
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + (height-20-(i * 20)) + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", function(d){return d[1];});
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d[0]; });
+
+
+
+
   redraw(true);
 });
 
 
 
 
+var altKey;
 
-
-
-// var altKey;
-
-// d3.select(window)
-//     .on("keydown", function() { altKey = d3.event.altKey; })
-//     .on("keyup", function() { altKey = false; });
-
-
-
-
-
+d3.select(window)
+    .on("keydown", function() { altKey = d3.event.altKey; })
+    .on("keyup", function() { altKey = false; });
 
 
 
@@ -96,8 +120,8 @@ function change() {
   // clearTimeout(timeout);
 
   d3.transition()
-      // .duration(altKey ? 7500 : 750)
-      .duration(transitionDuration)
+      .duration(altKey ? 7500 : 750)
+      // .duration(transitionDuration)
       .each(function(){
         redraw(false);
       });
@@ -109,16 +133,24 @@ function sortBars() {
   // clearTimeout(timeout);
   d3.transition()
       // .duration(altKey ? 7500 : 750)
-      .duration(transitionDuration)
+      .duration(transitionDuration+250)
       .each(function(){
         redraw(true);
       });
   // console.log()
 }
 
-
-
-
+function colorMap(food) {
+  if(meats.indexOf(food) >= 0){
+    return meatColor;
+  }
+  else if(vegetarian.indexOf(food) >= 0){
+    return vegetarianColor;
+  }
+  else{
+    return veganColor;
+  }
+}
 
 
 function redraw(sort) {
@@ -145,15 +177,12 @@ function redraw(sort) {
   barEnter
       .append("rect")
         .attr("width", type && function(d) { return x(d[type]); })
-        .attr("height", y.rangeBand());
+        .attr("height", y.rangeBand())
+        .attr("fill",function(d){
+          return colorMap(d.Item);
+        });
   
-  // svg.selectAll(".bar")
-  //     .append("rect")
-  //       .attr("width", type && function(d) { 
-  //         return x(d[type]*(d["Green"]/d["Total Mass (liter/kg)"])); 
-  //       })
-  //       .attr("height", y.rangeBand())
-  //       .attr("class","greenbar");
+
 
   //add text to the bars
   barEnter.append("text")
@@ -248,32 +277,8 @@ function redraw(sort) {
         }
       });
 
-  // //get rid of old bars
-  // var barExit = d3.transition(bar.exit())
-  //     .attr("transform", function(d) { return "translate(0," + (d.y0 + height) + ")"; })
-  //     .style("fill-opacity", 0)
-  //     .remove();
-
-  // barExit.select("rect")
-  //     .attr("width", function(d) { return x(d[type]); });
-
-  // barExit.select(".value")
-  //     .attr("x", function(d) { return x(d[type]) - 3; })
-  //     .text(function(d) { return format(d[type]); });
 
   d3.transition(svg).select(".x.axis")
       .call(xAxis);
 
-  console.log(d3.transition(svg));
-  console.log(d3.transition(svg).select(".x.axis"));
 }
-
-
-
-
-
-
-// var timeout = setTimeout(function() {
-//   menu.property("value", "Total Mass (liter/kg)").node().focus();
-//   change();
-// }, 5000);
